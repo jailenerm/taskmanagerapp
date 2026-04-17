@@ -43,7 +43,10 @@ export const scheduleTaskNotification = async (task) => {
           body: `${task.title} for ${task.course} is due tomorrow!`,
           sound: true,
         },
-        trigger: oneDayBefore,
+        trigger: {
+          type: 'date',
+          date: oneDayBefore,
+        },
       });
     }
 
@@ -57,7 +60,10 @@ export const scheduleTaskNotification = async (task) => {
           body: `${task.title} for ${task.course} is due very soon!`,
           sound: true,
         },
-        trigger: oneHourBefore,
+        trigger: {
+          type: 'date',
+          date: oneHourBefore,
+        },
       });
     }
   } catch (error) {

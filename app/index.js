@@ -1,11 +1,15 @@
-import React, { useState, useCallback } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+import { useCallback, useState } from 'react';
 import {
-  View, Text, FlatList, TouchableOpacity,
-  StyleSheet, SafeAreaView
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
-import { useRouter, useFocusEffect } from 'expo-router';
 import TaskCard from '../src/components/TaskCard';
-import { loadTasks, saveTasks, deleteTask } from '../src/services/storageService';
+import { deleteTask, loadTasks, saveTasks } from '../src/services/storageService';
 
 export default function DashboardScreen() {
   const [tasks, setTasks] = useState([]);
@@ -89,6 +93,21 @@ export default function DashboardScreen() {
       >
         <Text style={styles.addText}>+</Text>
       </TouchableOpacity>
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.navBtn} onPress={() => router.push('/progress')}
+          >
+            <Text style={styles.navIcon}>📊</Text>
+            <Text style={styles.navLabel}>Progress</Text>
+          </TouchableOpacity>
+          <View style={styles.navSpacer} />
+          <TouchableOpacity
+          style={styles.navBtn}
+          onPress={()  => router.push('/study-timer')}
+          >
+            <Text style={styles.navIcon}>⏱️</Text>
+            <Text style={styles.navLabel}>Timer</Text>
+          </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
@@ -108,7 +127,7 @@ const styles = StyleSheet.create({
   emptySubtext: { fontSize: 14, color: '#CBD5E1', marginTop: 8 },
   addBtn: {
     position: 'absolute',
-    bottom: 30, right: 30,
+    bottom: 110, right: 30,
     backgroundColor: '#6C63FF',
     width: 60, height: 60,
     borderRadius: 30,
@@ -116,4 +135,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addText: { color: '#fff', fontSize: 36, lineHeight: 40 },
+  bottomNav: {
+    flexDirection: 'row', justifyContent: 'space-around', 
+    alignItems: 'center', backgroundColor: '#fff',
+    paddingVertical: 10, borderTopWidth: 1, borderColor: '#E2E8F0',
+  },
+  navBtn: { alignItems: 'center', flex: 1 },
+  navIcon: { fontSize: 20 },
+  navLabel: { fontSize: 11, color: '#6C63FF', marginTop: 2, fontWeight: '500' },
+  navSpacer: { flex: 1 },
 });

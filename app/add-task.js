@@ -18,6 +18,7 @@ export default function AddTaskScreen() {
   const [dueDate, setDueDate] = useState('');
   const [isTest, setIsTest] = useState(false);
   const [selectedColor, setSelectedColor] = useState('#FF6B6B');
+  const [priority, setPriority] = useState('Medium');
   const router = useRouter();
 
   const handleSave = async () => {
@@ -31,6 +32,7 @@ export default function AddTaskScreen() {
       course: course.trim(),
       dueDate: dueDate.trim(),
       isTest,
+      priority,
       color: selectedColor,
       completed: false,
       createdAt: new Date().toISOString(),
@@ -72,6 +74,20 @@ export default function AddTaskScreen() {
           value={dueDate}
           onChangeText={setDueDate}
         />
+         <Text style={styles.label}>Priority</Text>  ADD BELOW
+  <View style={styles.priorityRow}>
+    {['High', 'Medium', 'Low'].map(p => (
+      <TouchableOpacity
+        key={p}
+        style={[styles.priorityBtn, priority === p && styles[`priority${p}`]]}
+        onPress={() => setPriority(p)}
+      >
+        <Text style={[styles.priorityText, priority === p && styles.priorityTextActive]}>
+          {p === 'High' ? '🔴 High' : p === 'Medium' ? '🟡 Medium' : '🟢 Low'}
+        </Text>
+      </TouchableOpacity>
+    ))}
+  </View>
 
         <Text style={styles.label}>Course Color</Text>
         <View style={styles.colorRow}>
@@ -128,4 +144,11 @@ const styles = StyleSheet.create({
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   cancelBtn: { borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
   cancelText: { color: '#94A3B8', fontSize: 15 },
+  priorityRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
+  priorityBtn: { flex: 1, padding: 10, borderRadius: 10, alignItems: 'center', backgroundColor: '#E2E8F0', borderWidth: 1, borderColor: '#E2E8F0' },
+  priorityHigh: { backgroundColor: '#FEE2E2', borderColor: '#FF6B6B' },
+  priorityMedium: { backgroundColor: '#FEF3C7', borderColor: '#F59E0B' },
+  priorityLow: { backgroundColor: '#DCFCE7', borderColor: '#4ADE80' },
+  priorityText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
+  priorityTextActive: { color: '#1E293B' },
 });
