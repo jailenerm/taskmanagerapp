@@ -1,4 +1,5 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function TaskCard({ task, onDelete, onComplete }) {
   return (
@@ -13,18 +14,22 @@ export default function TaskCard({ task, onDelete, onComplete }) {
           <View style={styles.testBadge}>
             <Text style={styles.testText}>TEST</Text>
           </View>
-        )}<View style={[styles.priorityBadge, {
-      backgroundColor: task.priority === 'High' ? '#FEE2E2' :
-        task.priority === 'Medium' ? '#FEF3C7' : '#DCFCE7'
-    }]}>
-      <Text style={[styles.priorityBadgeText, {
-        color: task.priority === 'High' ? '#DC2626' :
-          task.priority === 'Medium' ? '#D97706' : '#16A34A'
-      }]}>
-        {task.priority === 'High' ? '🔴' : task.priority === 'Medium' ? '🟡' : '🟢'} {task.priority}
-      </Text>
-    </View>
-  )
+        )}
+        {task.priority && (
+          <View style={[styles.priorityBadge, {
+            backgroundColor:
+              task.priority === 'High' ? '#FEE2E2' :
+              task.priority === 'Medium' ? '#FEF3C7' : '#DCFCE7'
+          }]}>
+            <Text style={[styles.priorityBadgeText, {
+              color:
+                task.priority === 'High' ? '#DC2626' :
+                task.priority === 'Medium' ? '#D97706' : '#16A34A'
+            }]}>
+              {task.priority === 'High' ? '🔴' : task.priority === 'Medium' ? '🟡' : '🟢'} {task.priority}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.actions}>
         <TouchableOpacity
@@ -73,9 +78,15 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   testText: { fontSize: 11, color: '#D97706', fontWeight: '700' },
-  priorityBadge: { borderRadius: 6, paddingHorizontal: 8, paddingVertical: 2, alignSelf: 'flex-start', marginTop: 4 },  ADD
-  ,priorityBadgeText: { fontSize: 11, fontWeight: '700' },  ADD
-  ,actions: { justifyContent: 'center', gap: 8 },
+  priorityBadge: {
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  priorityBadgeText: { fontSize: 11, fontWeight: '700' },
+  actions: { justifyContent: 'center', gap: 8 },
   btn: {
     paddingHorizontal: 12,
     paddingVertical: 6,
