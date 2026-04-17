@@ -1,19 +1,16 @@
-import { useFocusEffect } from '@react-navigation/native';
-import { useCallback, useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
-    FlatList,
-    SafeAreaView, StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  View, Text, FlatList, TouchableOpacity,
+  StyleSheet, SafeAreaView
 } from 'react-native';
-import TaskCard from '../components/TaskCard';
-import { deleteTask, loadTasks, saveTasks } from '../services/storageService';
+import { useRouter, useFocusEffect } from 'expo-router';
+import TaskCard from '../src/components/TaskCard';
+import { loadTasks, saveTasks, deleteTask } from '../src/services/storageService';
 
-export default function DashboardScreen({ navigation }) {
+export default function DashboardScreen() {
   const [tasks, setTasks] = useState([]);
   const [filter, setFilter] = useState('All');
+  const router = useRouter();
 
   useFocusEffect(
     useCallback(() => {
@@ -48,7 +45,9 @@ export default function DashboardScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content"/>
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>My Tasks</Text>
+      </View>
 
       <View style={styles.filterRow}>
         {filters.map(f => (
@@ -84,43 +83,22 @@ export default function DashboardScreen({ navigation }) {
         />
       )}
 
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navBtn}
-          onPress={() => navigation.navigate('Progress')}
-        >
-          <Text style={styles.navText}>📊 Progress</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.addBtn}
-          onPress={() => navigation.navigate('AddTask')}
-        >
-          <Text style={styles.addText}>+</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.navBtn}
-          onPress={() => navigation.navigate('StudyTimer')}
-        >
-          <Text style={styles.navText}>⏱ Timer</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity
+        style={styles.addBtn}
+        onPress={() => router.push('/add-task')}
+      >
+        <Text style={styles.addText}>+</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8FAFC' },
-  filterRow: {
-    flexDirection: 'row',
-    padding: 16,
-    gap: 8,
-  },
-  filterBtn: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#E2E8F0',
-  },
+  header: { backgroundColor: '#6C63FF', padding: 20, paddingTop: 10 },
+  headerTitle: { color: '#fff', fontSize: 24, fontWeight: 'bold' },
+  filterRow: { flexDirection: 'row', padding: 16, gap: 8 },
+  filterBtn: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20, backgroundColor: '#E2E8F0' },
   filterActive: { backgroundColor: '#6C63FF' },
   filterText: { color: '#64748B', fontWeight: '500' },
   filterTextActive: { color: '#fff' },
@@ -128,28 +106,14 @@ const styles = StyleSheet.create({
   empty: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   emptyText: { fontSize: 20, fontWeight: '600', color: '#94A3B8' },
   emptySubtext: { fontSize: 14, color: '#CBD5E1', marginTop: 8 },
-  bottomNav: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#E2E8F0',
-  },
-  navBtn: { alignItems: 'center', padding: 8 },
-  navText: { fontSize: 13, color: '#6C63FF', fontWeight: '500' },
   addBtn: {
+    position: 'absolute',
+    bottom: 30, right: 30,
     backgroundColor: '#6C63FF',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: 60, height: 60,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#6C63FF',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.4,
-    shadowRadius: 8,
   },
-  addText: { color: '#fff', fontSize: 32, lineHeight: 36 },
+  addText: { color: '#fff', fontSize: 36, lineHeight: 40 },
 });
