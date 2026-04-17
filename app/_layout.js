@@ -46,6 +46,15 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: 'bold' },
         }}
       />
+      <Stack.Screen
+        name="classes"
+        options={{
+          title: 'My Classes',
+          headerStyle: { backgroundColor: '#6C63FF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      />
     </Stack>
   );
 }

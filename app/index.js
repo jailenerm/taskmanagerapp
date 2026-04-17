@@ -41,11 +41,15 @@ export default function DashboardScreen() {
 
   const filters = ['All', 'Pending', 'Completed'];
 
-  const filteredTasks = tasks.filter(task => {
-    if (filter === 'Pending') return !task.completed;
-    if (filter === 'Completed') return task.completed;
-    return true;
-  });
+  const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
+
+  const filteredTasks = tasks
+    .filter(task => {
+      if (filter === 'Pending') return !task.completed;
+      if (filter === 'Completed') return task.completed;
+      return true;
+    })
+    .sort((a, b) => (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2));
 
   return (
     <SafeAreaView style={styles.container}>
@@ -93,21 +97,32 @@ export default function DashboardScreen() {
       >
         <Text style={styles.addText}>+</Text>
       </TouchableOpacity>
+
       <View style={styles.bottomNav}>
-        <TouchableOpacity style={styles.navBtn} onPress={() => router.push('/progress')}
-          >
-            <Text style={styles.navIcon}>📊</Text>
-            <Text style={styles.navLabel}>Progress</Text>
-          </TouchableOpacity>
-          <View style={styles.navSpacer} />
-          <TouchableOpacity
+        <TouchableOpacity
           style={styles.navBtn}
-          onPress={()  => router.push('/study-timer')}
-          >
-            <Text style={styles.navIcon}>⏱️</Text>
-            <Text style={styles.navLabel}>Timer</Text>
-          </TouchableOpacity>
+          onPress={() => router.push('/classes')}
+        >
+          <Text style={styles.navIcon}>📚</Text>
+          <Text style={styles.navLabel}>Classes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navBtn}
+          onPress={() => router.push('/progress')}
+        >
+          <Text style={styles.navIcon}>📊</Text>
+          <Text style={styles.navLabel}>Progress</Text>
+        </TouchableOpacity>
+        <View style={styles.navSpacer} />
+        <TouchableOpacity
+          style={styles.navBtn}
+          onPress={() => router.push('/study-timer')}
+        >
+          <Text style={styles.navIcon}>⏱</Text>
+          <Text style={styles.navLabel}>Timer</Text>
+        </TouchableOpacity>
       </View>
+
     </SafeAreaView>
   );
 }
@@ -136,9 +151,13 @@ const styles = StyleSheet.create({
   },
   addText: { color: '#fff', fontSize: 36, lineHeight: 40 },
   bottomNav: {
-    flexDirection: 'row', justifyContent: 'space-around', 
-    alignItems: 'center', backgroundColor: '#fff',
-    paddingVertical: 10, borderTopWidth: 1, borderColor: '#E2E8F0',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    paddingVertical: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#E2E8F0',
   },
   navBtn: { alignItems: 'center', flex: 1 },
   navIcon: { fontSize: 20 },
