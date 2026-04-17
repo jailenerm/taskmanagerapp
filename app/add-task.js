@@ -189,8 +189,7 @@ export default function AddTaskScreen() {
 
         <View style={styles.switchRow}>
           <View>
-            <Text style={styles.switchLabel}>Is this a Test/Exam?</Text>
-            <Text style={styles.switchSub}>Enables test badge on task</Text>
+            <Text style={styles.switchLabel}>Test/Exam</Text>
           </View>
           <Switch
             value={isTest}
