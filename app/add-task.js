@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   Alert,
@@ -16,6 +16,7 @@ import { scheduleTaskNotification } from '../src/services/notificationService';
 import { loadTasks, saveTasks } from '../src/services/storageService';
 
 export default function AddTaskScreen() {
+  const { taskId } = useLocalSearchParams();
   const [title, setTitle] = useState('');
   const [course, setCourse] = useState('');
   const [courseColor, setCourseColor] = useState('#FF6B6B');
@@ -32,17 +33,38 @@ export default function AddTaskScreen() {
   });
   const [classes, setClasses] = useState([]);
   const [showClassPicker, setShowClassPicker] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    const fetchClasses = async () => {
+    const fetchData = async () => {
       try {
-        const data = await AsyncStorage.getItem('classes');
-        setClasses(data ? JSON.parse(data) : []);
+        const classData = await AsyncStorage.getItem('classes');
+        setClasses(classData ? JSON.parse(classData) : []);
       } catch { setClasses([]); }
+
+      if (taskId) {
+        setIsEditing(true);
+        const tasks = await loadTasks();
+        const task = tasks.find(t => t.id === taskId);
+        if (task) {
+          setTitle(task.title);
+          setCourse(task.course);
+          setCourseColor(task.color || '#FF6B6B');
+          setIsTest(task.isTest || false);
+          setPriority(task.priority || 'Medium');
+          if (task.dueDate) {
+            const parts = task.dueDate.split('/');
+            if (parts.length === 3) {
+              setDueDate(new Date(parts[2], parts[0] - 1, parts[1]));
+            }
+          }
+          if (task.reminders) setReminders(task.reminders);
+        }
+      }
     };
-    fetchClasses();
-  }, []);
+    fetchData();
+  }, [taskId]);
 
   const formatDate = (date) => {
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
@@ -52,28 +74,48 @@ export default function AddTaskScreen() {
     if (!title.trim()) { Alert.alert('Oops!', 'Please enter a title'); return; }
     if (!course.trim()) { Alert.alert('Oops!', 'Please select or enter a course'); return; }
 
-    const newTask = {
-      id: Date.now().toString(),
-      title: title.trim(),
-      course: course.trim(),
-      dueDate: formatDate(dueDate),
-      isTest,
-      reminderDate: reminderDate.toISOString(),
-      reminders,
-      priority,
-      color: courseColor,
-      pinned: isTest,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    };
+    const tasks = await loadTasks();
 
-    const existing = await loadTasks();
-    await saveTasks([...existing, newTask]);
-    await scheduleTaskNotification(newTask);
-
-    Alert.alert('Success!', 'Assignment added!', [
-      { text: 'OK', onPress: () => router.back() }
-    ]);
+    if (isEditing) {
+      const updated = tasks.map(t =>
+        t.id === taskId ? {
+          ...t,
+          title: title.trim(),
+          course: course.trim(),
+          dueDate: formatDate(dueDate),
+          isTest,
+          reminderDate: reminderDate.toISOString(),
+          reminders,
+          priority,
+          color: courseColor,
+          pinned: isTest ? true : t.pinned,
+        } : t
+      );
+      await saveTasks(updated);
+      Alert.alert('Updated!', 'Assignment updated successfully!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    } else {
+      const newTask = {
+        id: Date.now().toString(),
+        title: title.trim(),
+        course: course.trim(),
+        dueDate: formatDate(dueDate),
+        isTest,
+        reminderDate: reminderDate.toISOString(),
+        reminders,
+        priority,
+        color: courseColor,
+        pinned: isTest,
+        completed: false,
+        createdAt: new Date().toISOString(),
+      };
+      await saveTasks([...tasks, newTask]);
+      await scheduleTaskNotification(newTask);
+      Alert.alert('Success!', 'Assignment added!', [
+        { text: 'OK', onPress: () => router.back() }
+      ]);
+    }
   };
 
   return (
@@ -84,6 +126,7 @@ export default function AddTaskScreen() {
         <TextInput
           style={styles.input}
           placeholder="e.g. Chapter 5 Essay"
+          placeholderTextColor="#94A3B8"
           value={title}
           onChangeText={setTitle}
         />
@@ -107,18 +150,11 @@ export default function AddTaskScreen() {
         ) : (
           <TextInput
             style={styles.input}
-            placeholder="e.g. English (Add classes first!)"
+            placeholder="e.g. English"
+            placeholderTextColor="#94A3B8"
             value={course}
             onChangeText={setCourse}
           />
-        )}
-
-        {classes.length > 0 && (
-          <TouchableOpacity onPress={() => setShowClassPicker(true)}>
-            <Text style={styles.addManually}>
-              {course ? 'Change class' : 'Or type manually'}
-            </Text>
-          </TouchableOpacity>
         )}
 
         <Text style={styles.label}>Due Date</Text>
@@ -214,7 +250,9 @@ export default function AddTaskScreen() {
         </View>
 
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveBtnText}>Save Assignment</Text>
+          <Text style={styles.saveBtnText}>
+            {isEditing ? 'Save Changes' : 'Save Assignment'}
+          </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
@@ -277,14 +315,13 @@ const styles = StyleSheet.create({
   scroll: { padding: 20, paddingBottom: 60 },
   label: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 6, marginTop: 16 },
   switchLabel: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 2 },
-  input: { backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 15, borderWidth: 1, borderColor: '#E2E8F0' },
+  input: { backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 15, borderWidth: 1, borderColor: '#E2E8F0', color: '#1E293B' },
   coursePickerBtn: { backgroundColor: '#fff', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   courseSelected: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   courseDot: { width: 12, height: 12, borderRadius: 6 },
   courseSelectedText: { fontSize: 15, color: '#1E293B', fontWeight: '500' },
   coursePlaceholder: { fontSize: 15, color: '#94A3B8' },
   courseArrow: { fontSize: 16, color: '#94A3B8' },
-  addManually: { fontSize: 12, color: '#6C63FF', marginTop: 6, fontWeight: '500' },
   dateBtn: { backgroundColor: '#fff', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
   dateBtnText: { fontSize: 15, color: '#1E293B' },
   doneBtn: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 10, alignItems: 'center', marginTop: 8 },
