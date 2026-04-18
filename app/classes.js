@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
@@ -43,8 +44,10 @@ export default function ClassesScreen() {
   const [className, setClassName] = useState('');
   const [professor, setProfessor] = useState('');
   const [room, setRoom] = useState('');
-  const [startTime, setStartTime] = useState('');
-  const [endTime, setEndTime] = useState('');
+  const [startTimeDate, setStartTimeDate] = useState(new Date());
+  const [endTimeDate, setEndTimeDate] = useState(new Date());
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
   const [selectedColor, setSelectedColor] = useState('#FF6B6B');
 
@@ -58,13 +61,35 @@ export default function ClassesScreen() {
     }, [])
   );
 
+  const formatTime = (date) => {
+    let hours = date.getHours();
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
+  const parseTime = (timeStr) => {
+    if (!timeStr) return new Date();
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (!match) return new Date();
+    let hours = parseInt(match[1]);
+    const minutes = parseInt(match[2]);
+    const ampm = match[3].toUpperCase();
+    if (ampm === 'PM' && hours !== 12) hours += 12;
+    if (ampm === 'AM' && hours === 12) hours = 0;
+    const d = new Date();
+    d.setHours(hours, minutes, 0, 0);
+    return d;
+  };
+
   const openAddModal = () => {
     setEditingClass(null);
     setClassName('');
     setProfessor('');
     setRoom('');
-    setStartTime('');
-    setEndTime('');
+    setStartTimeDate(new Date());
+    setEndTimeDate(new Date());
     setSelectedDays([]);
     setSelectedColor('#FF6B6B');
     setModalVisible(true);
@@ -75,8 +100,8 @@ export default function ClassesScreen() {
     setClassName(cls.name);
     setProfessor(cls.professor || '');
     setRoom(cls.room || '');
-    setStartTime(cls.startTime || '');
-    setEndTime(cls.endTime || '');
+    setStartTimeDate(parseTime(cls.startTime));
+    setEndTimeDate(parseTime(cls.endTime));
     setSelectedDays(cls.days || []);
     setSelectedColor(cls.color);
     setModalVisible(true);
@@ -94,37 +119,28 @@ export default function ClassesScreen() {
       return;
     }
 
+    const classData = {
+      name: className.trim(),
+      professor: professor.trim(),
+      room: room.trim(),
+      startTime: formatTime(startTimeDate),
+      endTime: formatTime(endTimeDate),
+      days: selectedDays,
+      color: selectedColor,
+    };
+
     if (editingClass) {
       const updated = classes.map(c =>
-        c.id === editingClass.id ? {
-          ...c,
-          name: className.trim(),
-          professor: professor.trim(),
-          room: room.trim(),
-          startTime: startTime.trim(),
-          endTime: endTime.trim(),
-          days: selectedDays,
-          color: selectedColor,
-        } : c
+        c.id === editingClass.id ? { ...c, ...classData } : c
       );
       setClasses(updated);
       await saveClasses(updated);
     } else {
-      const newClass = {
-        id: Date.now().toString(),
-        name: className.trim(),
-        professor: professor.trim(),
-        room: room.trim(),
-        startTime: startTime.trim(),
-        endTime: endTime.trim(),
-        days: selectedDays,
-        color: selectedColor,
-      };
+      const newClass = { id: Date.now().toString(), ...classData };
       const updated = [...classes, newClass];
       setClasses(updated);
       await saveClasses(updated);
     }
-
     setModalVisible(false);
   };
 
@@ -205,10 +221,7 @@ export default function ClassesScreen() {
         />
       )}
 
-      <TouchableOpacity
-        style={styles.addBtn}
-        onPress={openAddModal}
-      >
+      <TouchableOpacity style={styles.addBtn} onPress={openAddModal}>
         <Text style={styles.addText}>+</Text>
       </TouchableOpacity>
 
@@ -229,10 +242,12 @@ export default function ClassesScreen() {
           </View>
 
           <ScrollView contentContainerStyle={styles.modalBody}>
+
             <Text style={styles.label}>Class Name</Text>
             <TextInput
               style={styles.input}
               placeholder="e.g. Calculus 101"
+              placeholderTextColor="#94A3B8"
               value={className}
               onChangeText={setClassName}
             />
@@ -241,6 +256,7 @@ export default function ClassesScreen() {
             <TextInput
               style={styles.input}
               placeholder="e.g. Dr. Smith"
+              placeholderTextColor="#94A3B8"
               value={professor}
               onChangeText={setProfessor}
             />
@@ -249,6 +265,7 @@ export default function ClassesScreen() {
             <TextInput
               style={styles.input}
               placeholder="e.g. Building A, Room 203"
+              placeholderTextColor="#94A3B8"
               value={room}
               onChangeText={setRoom}
             />
@@ -275,20 +292,56 @@ export default function ClassesScreen() {
             </View>
 
             <Text style={styles.label}>Start Time</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. 9:00 AM"
-              value={startTime}
-              onChangeText={setStartTime}
-            />
+            <TouchableOpacity
+              style={styles.timeBtn}
+              onPress={() => setShowStartPicker(true)}
+            >
+              <Text style={styles.timeBtnText}>{'⏰ ' + formatTime(startTimeDate)}</Text>
+            </TouchableOpacity>
+            {showStartPicker && (
+              <View>
+                <DateTimePicker
+                  value={startTimeDate}
+                  mode="time"
+                  display="spinner"
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) setStartTimeDate(selectedDate);
+                  }}
+                />
+                <TouchableOpacity
+                  style={styles.doneBtn}
+                  onPress={() => setShowStartPicker(false)}
+                >
+                  <Text style={styles.doneBtnText}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            )}
 
             <Text style={styles.label}>End Time</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="e.g. 10:30 AM"
-              value={endTime}
-              onChangeText={setEndTime}
-            />
+            <TouchableOpacity
+              style={styles.timeBtn}
+              onPress={() => setShowEndPicker(true)}
+            >
+              <Text style={styles.timeBtnText}>{'⏰ ' + formatTime(endTimeDate)}</Text>
+            </TouchableOpacity>
+            {showEndPicker && (
+              <View>
+                <DateTimePicker
+                  value={endTimeDate}
+                  mode="time"
+                  display="spinner"
+                  onChange={(event, selectedDate) => {
+                    if (selectedDate) setEndTimeDate(selectedDate);
+                  }}
+                />
+                <TouchableOpacity
+                  style={styles.doneBtn}
+                  onPress={() => setShowEndPicker(false)}
+                >
+                  <Text style={styles.doneBtnText}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            )}
 
             <Text style={styles.label}>Class Color</Text>
             <View style={styles.colorRow}>
@@ -310,6 +363,7 @@ export default function ClassesScreen() {
                 {editingClass ? 'Save Changes' : 'Add Class'}
               </Text>
             </TouchableOpacity>
+
           </ScrollView>
         </SafeAreaView>
       </Modal>
@@ -372,7 +426,11 @@ const styles = StyleSheet.create({
   modalClose: { fontSize: 16, color: '#6C63FF', fontWeight: '600' },
   modalBody: { padding: 20, paddingBottom: 60 },
   label: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 6, marginTop: 16 },
-  input: { backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 15, borderWidth: 1, borderColor: '#E2E8F0' },
+  input: { backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 15, borderWidth: 1, borderColor: '#E2E8F0', color: '#1E293B' },
+  timeBtn: { backgroundColor: '#fff', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
+  timeBtnText: { fontSize: 15, color: '#1E293B' },
+  doneBtn: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 10, alignItems: 'center', marginTop: 8 },
+  doneBtnText: { color: '#fff', fontWeight: '600' },
   daysRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8 },
   dayBtn: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, backgroundColor: '#E2E8F0' },
   dayBtnText: { fontSize: 13, fontWeight: '500', color: '#64748B' },
