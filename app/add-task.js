@@ -2,12 +2,12 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    SafeAreaView, ScrollView,
-    StyleSheet,
-    Switch,
-    Text, TextInput, TouchableOpacity,
-    View
+  Alert,
+  SafeAreaView, ScrollView,
+  StyleSheet,
+  Switch,
+  Text, TextInput, TouchableOpacity,
+  View
 } from 'react-native';
 import { COURSE_COLORS } from '../src/constants/courseColors';
 import { scheduleTaskNotification } from '../src/services/notificationService';
@@ -67,7 +67,7 @@ export default function AddTaskScreen() {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        <Text style={styles.label}>Task Title</Text>
+        <Text style={styles.label}>Title</Text>
         <TextInput
           style={styles.input}
           placeholder="e.g. Chapter 5 Essay"
@@ -200,7 +200,7 @@ export default function AddTaskScreen() {
         </View>
 
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveBtnText}>Save Task</Text>
+          <Text style={styles.saveBtnText}>Save </Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
