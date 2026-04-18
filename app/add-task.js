@@ -22,23 +22,20 @@ export default function AddTaskScreen() {
   const [dueDate, setDueDate] = useState(new Date());
   const [showDuePicker, setShowDuePicker] = useState(false);
   const [reminderDate, setReminderDate] = useState(new Date());
-  const [showReminderTime, setShowReminderTime] = useState(false);
+  const [reminders, setReminders] = useState({
+    week: false,
+    day: true,
+    hour: false,
+    morning: false,
+  });
   const router = useRouter();
 
   const formatDate = (date) => {
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
   };
 
-  const formatTime = (date) => {
-    let hours = date.getHours();
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    return `${hours}:${minutes} ${ampm}`;
-  };
-
   const handleSave = async () => {
-    if (!title.trim()) { Alert.alert('Oops!', 'Please enter a task title'); return; }
+    if (!title.trim()) { Alert.alert('Oops!', 'Please enter a title'); return; }
     if (!course.trim()) { Alert.alert('Oops!', 'Please enter a course name'); return; }
 
     const newTask = {
@@ -48,8 +45,10 @@ export default function AddTaskScreen() {
       dueDate: formatDate(dueDate),
       isTest,
       reminderDate: reminderDate.toISOString(),
+      reminders,
       priority,
       color: selectedColor,
+      pinned: isTest,
       completed: false,
       createdAt: new Date().toISOString(),
     };
@@ -58,7 +57,7 @@ export default function AddTaskScreen() {
     await saveTasks([...existing, newTask]);
     await scheduleTaskNotification(newTask);
 
-    Alert.alert('Success!', 'Task added!', [
+    Alert.alert('Success!', 'Assignment added!', [
       { text: 'OK', onPress: () => router.back() }
     ]);
   };
@@ -86,7 +85,7 @@ export default function AddTaskScreen() {
         <Text style={styles.label}>Due Date</Text>
         <TouchableOpacity
           style={styles.dateBtn}
-          onPress={() => setShowDuePicker(!showDuePicker)}
+          onPress={() => setShowDuePicker(true)}
         >
           <Text style={styles.dateBtnText}>{'📅 ' + formatDate(dueDate)}</Text>
         </TouchableOpacity>
@@ -102,7 +101,6 @@ export default function AddTaskScreen() {
                 if (selectedDate) {
                   setDueDate(selectedDate);
                   setReminderDate(selectedDate);
-                  setShowReminderTime(true);
                 }
               }}
             />
@@ -115,45 +113,36 @@ export default function AddTaskScreen() {
           </View>
         )}
 
-        {showReminderTime && !showDuePicker && (
-          <View style={styles.reminderTimeBox}>
-            <Text style={styles.reminderTimeTitle}>{'⏰ Set Reminder Time'}</Text>
-            <Text style={styles.reminderTimeSub}>
-              Pick a time to be reminded about this task
-            </Text>
-            <DateTimePicker
-              value={reminderDate}
-              mode="time"
-              display="spinner"
-              onChange={(event, selectedDate) => {
-                if (selectedDate) setReminderDate(selectedDate);
-              }}
-            />
-            <View style={styles.reminderTimeBtns}>
+        {!showDuePicker && (
+          <View style={styles.remindersBox}>
+            <Text style={styles.remindersTitle}>{'⏰ Reminders'}</Text>
+            {[
+              { label: '1 week before', key: 'week' },
+              { label: '1 day before', key: 'day' },
+              { label: '1 hour before', key: 'hour' },
+              { label: 'Morning of due date (9 AM)', key: 'morning' },
+            ].map(option => (
               <TouchableOpacity
-                style={styles.skipBtn}
-                onPress={() => setShowReminderTime(false)}
+                key={option.key}
+                style={styles.reminderOption}
+                onPress={() => {
+                  setReminders(prev => ({
+                    ...prev,
+                    [option.key]: !prev[option.key]
+                  }));
+                }}
               >
-                <Text style={styles.skipBtnText}>Skip</Text>
+                <View style={[
+                  styles.reminderCheck,
+                  reminders[option.key] && styles.reminderCheckActive
+                ]}>
+                  {reminders[option.key] && (
+                    <Text style={styles.reminderCheckMark}>✓</Text>
+                  )}
+                </View>
+                <Text style={styles.reminderOptionText}>{option.label}</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.doneBtn2}
-                onPress={() => setShowReminderTime(false)}
-              >
-                <Text style={styles.doneBtnText}>{'Set Reminder ✓'}</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
-        {!showReminderTime && !showDuePicker && (
-          <View style={styles.reminderSet}>
-            <Text style={styles.reminderSetText}>
-              {'⏰ Reminder: ' + formatTime(reminderDate)}
-            </Text>
-            <TouchableOpacity onPress={() => setShowReminderTime(true)}>
-              <Text style={styles.reminderSetEdit}>Edit</Text>
-            </TouchableOpacity>
+            ))}
           </View>
         )}
 
@@ -190,6 +179,7 @@ export default function AddTaskScreen() {
         <View style={styles.switchRow}>
           <View>
             <Text style={styles.switchLabel}>Test/Exam</Text>
+            <Text style={styles.switchSub}>Auto pins this assignment</Text>
           </View>
           <Switch
             value={isTest}
@@ -200,7 +190,7 @@ export default function AddTaskScreen() {
         </View>
 
         <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-          <Text style={styles.saveBtnText}>Save </Text>
+          <Text style={styles.saveBtnText}>Save Assignment</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.cancelBtn} onPress={() => router.back()}>
@@ -222,16 +212,13 @@ const styles = StyleSheet.create({
   dateBtnText: { fontSize: 15, color: '#1E293B' },
   doneBtn: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 10, alignItems: 'center', marginTop: 8 },
   doneBtnText: { color: '#fff', fontWeight: '600' },
-  reminderTimeBox: { backgroundColor: '#EEF2FF', borderRadius: 12, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#6C63FF' },
-  reminderTimeTitle: { fontSize: 16, fontWeight: '700', color: '#3730A3', marginBottom: 4 },
-  reminderTimeSub: { fontSize: 12, color: '#6366F1', marginBottom: 8 },
-  reminderTimeBtns: { flexDirection: 'row', gap: 8, marginTop: 8 },
-  skipBtn: { flex: 1, padding: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#E2E8F0' },
-  skipBtnText: { color: '#64748B', fontWeight: '600' },
-  doneBtn2: { flex: 2, padding: 10, borderRadius: 8, alignItems: 'center', backgroundColor: '#6C63FF' },
-  reminderSet: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#EEF2FF', borderRadius: 10, padding: 12, marginTop: 8, borderWidth: 1, borderColor: '#6C63FF' },
-  reminderSetText: { fontSize: 13, color: '#3730A3', fontWeight: '500' },
-  reminderSetEdit: { fontSize: 13, color: '#6C63FF', fontWeight: '600' },
+  remindersBox: { backgroundColor: '#fff', borderRadius: 12, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#E2E8F0' },
+  remindersTitle: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 12 },
+  reminderOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F1F5F9' },
+  reminderCheck: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#CBD5E1', marginRight: 12, alignItems: 'center', justifyContent: 'center' },
+  reminderCheckActive: { backgroundColor: '#6C63FF', borderColor: '#6C63FF' },
+  reminderCheckMark: { color: '#fff', fontSize: 12, fontWeight: '700' },
+  reminderOptionText: { fontSize: 14, color: '#1E293B' },
   priorityRow: { flexDirection: 'row', gap: 8, marginTop: 8 },
   priorityBtn: { flex: 1, padding: 10, borderRadius: 10, alignItems: 'center', backgroundColor: '#E2E8F0', borderWidth: 1, borderColor: '#E2E8F0' },
   priorityHigh: { backgroundColor: '#FEE2E2', borderColor: '#FF6B6B' },
