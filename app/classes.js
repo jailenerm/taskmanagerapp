@@ -37,6 +37,18 @@ export const saveClasses = async (classes) => {
   } catch (e) { console.error(e); }
 };
 
+const toMinutes = (time) => {
+  if (!time) return 9999;
+  const match = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!match) return 9999;
+  let hours = parseInt(match[1]);
+  const minutes = parseInt(match[2]);
+  const ampm = match[3].toUpperCase();
+  if (ampm === 'PM' && hours !== 12) hours += 12;
+  if (ampm === 'AM' && hours === 12) hours = 0;
+  return hours * 60 + minutes;
+};
+
 export default function ClassesScreen() {
   const [classes, setClasses] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
@@ -55,7 +67,8 @@ export default function ClassesScreen() {
     useCallback(() => {
       const fetch = async () => {
         const loaded = await loadClasses();
-        setClasses(loaded);
+        const sorted = [...loaded].sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
+        setClasses(sorted);
       };
       fetch();
     }, [])
@@ -129,18 +142,19 @@ export default function ClassesScreen() {
       color: selectedColor,
     };
 
+    let updated;
     if (editingClass) {
-      const updated = classes.map(c =>
+      updated = classes.map(c =>
         c.id === editingClass.id ? { ...c, ...classData } : c
       );
-      setClasses(updated);
-      await saveClasses(updated);
     } else {
       const newClass = { id: Date.now().toString(), ...classData };
-      const updated = [...classes, newClass];
-      setClasses(updated);
-      await saveClasses(updated);
+      updated = [...classes, newClass];
     }
+
+    const sorted = [...updated].sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
+    setClasses(sorted);
+    await saveClasses(sorted);
     setModalVisible(false);
   };
 
