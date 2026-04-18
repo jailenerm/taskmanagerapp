@@ -1,10 +1,10 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
-    SafeAreaView, ScrollView,
-    StyleSheet,
-    Text,
-    View
+  SafeAreaView, ScrollView,
+  StyleSheet,
+  Text,
+  View
 } from 'react-native';
 import { loadTasks } from '../src/services/storageService';
 

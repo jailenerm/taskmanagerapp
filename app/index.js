@@ -47,6 +47,10 @@ export default function DashboardScreen() {
     await saveTasks(updated);
   };
 
+  const handleEdit = (task) => {
+    router.push({ pathname: '/add-task', params: { taskId: task.id } });
+  };
+
   const filters = ['Pending', 'Completed'];
 
   const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
@@ -101,6 +105,7 @@ export default function DashboardScreen() {
               onDelete={handleDelete}
               onComplete={handleComplete}
               onPin={handlePin}
+              onEdit={handleEdit}
             />
           )}
           contentContainerStyle={styles.list}
