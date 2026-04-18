@@ -13,17 +13,14 @@ export default function RootLayout() {
       <Stack.Screen
         name="index"
         options={{
-          title: 'My Tasks',
-          headerStyle: { backgroundColor: '#6C63FF' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' },
+          headerShown: false,
         }}
       />
       <Stack.Screen
         name="add-task"
         options={{
-          title: 'Add New Task',
-          headerStyle: { backgroundColor: '#6C63FF' },
+          title: 'Add Assignment',
+          headerStyle: { backgroundColor: '#63c3ff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
@@ -32,7 +29,7 @@ export default function RootLayout() {
         name="progress"
         options={{
           title: 'My Progress',
-          headerStyle: { backgroundColor: '#6C63FF' },
+          headerStyle: { backgroundColor: '#63ceff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
@@ -41,7 +38,7 @@ export default function RootLayout() {
         name="study-timer"
         options={{
           title: 'Study Timer',
-          headerStyle: { backgroundColor: '#6C63FF' },
+          headerStyle: { backgroundColor: '#63d5ff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
         }}
@@ -50,7 +47,7 @@ export default function RootLayout() {
         name="classes"
         options={{
           title: 'My Classes',
-          headerStyle: { backgroundColor: '#6C63FF' },
+          headerStyle: { backgroundColor: '#63c8ff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
         }}

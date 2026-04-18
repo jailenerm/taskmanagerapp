@@ -54,7 +54,7 @@ export default function DashboardScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>My Tasks</Text>
+        <Text style={styles.headerTitle}>My Assignments</Text>
       </View>
 
       <View style={styles.filterRow}>
