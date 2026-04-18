@@ -39,6 +39,14 @@ export default function DashboardScreen() {
     await saveTasks(updated);
   };
 
+  const handlePin = async (taskId) => {
+    const updated = tasks.map(task =>
+      task.id === taskId ? { ...task, pinned: !task.pinned } : task
+    );
+    setTasks(updated);
+    await saveTasks(updated);
+  };
+
   const filters = ['All', 'Pending', 'Completed'];
 
   const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
@@ -49,7 +57,11 @@ export default function DashboardScreen() {
       if (filter === 'Completed') return task.completed;
       return true;
     })
-    .sort((a, b) => (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2));
+    .sort((a, b) => {
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return (priorityOrder[a.priority] || 2) - (priorityOrder[b.priority] || 2);
+    });
 
   return (
     <SafeAreaView style={styles.container}>
@@ -73,7 +85,7 @@ export default function DashboardScreen() {
 
       {filteredTasks.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No tasks yet!</Text>
+          <Text style={styles.emptyText}>No assignments yet!</Text>
           <Text style={styles.emptySubtext}>Tap + to add your first assignment</Text>
         </View>
       ) : (
@@ -85,6 +97,7 @@ export default function DashboardScreen() {
               task={item}
               onDelete={handleDelete}
               onComplete={handleComplete}
+              onPin={handlePin}
             />
           )}
           contentContainerStyle={styles.list}

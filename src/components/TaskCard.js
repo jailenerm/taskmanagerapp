@@ -1,15 +1,24 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function TaskCard({ task, onDelete, onComplete }) {
+export default function TaskCard({ task, onDelete, onComplete, onPin }) {
   return (
-    <View style={[styles.card, { borderLeftColor: task.color, opacity: task.completed ? 0.5 : 1 }]}>
+    <View style={[
+      styles.card,
+      { borderLeftColor: task.color },
+      task.pinned && styles.pinnedCard,
+      { opacity: task.completed ? 0.5 : 1 }
+    ]}>
+      {task.pinned && (
+        <View style={styles.pinnedBanner}>
+          <Text style={styles.pinnedBannerText}>📌 Pinned</Text>
+        </View>
+      )}
       <View style={styles.info}>
         <Text style={[styles.title, task.completed && styles.completed]}>
           {task.title}
         </Text>
         <Text style={styles.course}>{task.course}</Text>
-        <Text style={styles.due}>Due: {task.dueDate}</Text>
+        <Text style={styles.due}>{'Due: ' + task.dueDate}</Text>
         {task.isTest && (
           <View style={styles.testBadge}>
             <Text style={styles.testText}>TEST</Text>
@@ -32,6 +41,12 @@ export default function TaskCard({ task, onDelete, onComplete }) {
         )}
       </View>
       <View style={styles.actions}>
+        <TouchableOpacity
+          style={[styles.btn, { backgroundColor: task.pinned ? '#F59E0B' : '#E2E8F0' }]}
+          onPress={() => onPin(task.id)}
+        >
+          <Text style={styles.pinBtnText}>📌</Text>
+        </TouchableOpacity>
         <TouchableOpacity
           style={[styles.btn, { backgroundColor: task.completed ? '#CBD5E1' : '#6C63FF' }]}
           onPress={() => onComplete(task.id)}
@@ -56,14 +71,26 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 12,
     borderLeftWidth: 6,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.08,
     shadowRadius: 4,
     elevation: 3,
   },
+  pinnedCard: {
+    borderWidth: 1.5,
+    borderColor: '#F59E0B',
+    backgroundColor: '#FFFBEB',
+  },
+  pinnedBanner: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    alignSelf: 'flex-start',
+    marginBottom: 8,
+  },
+  pinnedBannerText: { fontSize: 11, color: '#D97706', fontWeight: '700' },
   info: { flex: 1 },
   title: { fontSize: 16, fontWeight: '600', color: '#1E293B', marginBottom: 4 },
   completed: { textDecorationLine: 'line-through', color: '#94A3B8' },
@@ -93,5 +120,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
   },
+  pinBtnText: { fontSize: 14 },
   btnText: { color: '#fff', fontSize: 12, fontWeight: '600' },
 });
