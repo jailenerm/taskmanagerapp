@@ -4,7 +4,7 @@ A mobile app I built for my Intro to Software Engineering class. It helps colleg
 
 ## What the app does
 
-Basically I got tired of forgetting assignments and missing due dates so I made an app that does all of that for me. You can add your classes for the semester, add assignments with due dates, set reminders, and track everything from your phone.
+I made an app that helps me keep track of my assignment. You can add your classes for the semester, add assignments with due dates, set reminders, and track everything from your phone.
 
 ## Features
 
@@ -54,6 +54,3 @@ TaskManagerApp/
 │   └── constants/
 │       └── courseColors.js        — color options
 
-## Built by
-
-Jailene 
