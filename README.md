@@ -54,3 +54,6 @@ TaskManagerApp/
 │   └── constants/
 │       └── courseColors.js        — color options
 
+## Built by
+
+Jailene 
