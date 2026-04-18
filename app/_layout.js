@@ -23,6 +23,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: '#63c3ff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
         }}
       />
       <Stack.Screen
@@ -32,6 +33,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: '#63ceff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
         }}
       />
       <Stack.Screen
@@ -41,15 +43,17 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: '#63d5ff' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
         }}
       />
       <Stack.Screen
         name="classes"
         options={{
           title: 'My Classes',
-          headerStyle: { backgroundColor: '#63c8ff' },
+          headerStyle: { backgroundColor: '#6C63FF' },
           headerTintColor: '#fff',
           headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
         }}
       />
     </Stack>
