@@ -13,7 +13,7 @@ import { deleteTask, loadTasks, saveTasks } from '../src/services/storageService
 
 export default function DashboardScreen() {
   const [tasks, setTasks] = useState([]);
-  const [filter, setFilter] = useState('All');
+  const [filter, setFilter] = useState('Pending');
   const router = useRouter();
 
   useFocusEffect(
@@ -47,15 +47,14 @@ export default function DashboardScreen() {
     await saveTasks(updated);
   };
 
-  const filters = ['All', 'Pending', 'Completed'];
+  const filters = ['Pending', 'Completed'];
 
   const priorityOrder = { 'High': 1, 'Medium': 2, 'Low': 3 };
 
   const filteredTasks = tasks
     .filter(task => {
-      if (filter === 'Pending') return !task.completed;
       if (filter === 'Completed') return task.completed;
-      return true;
+      return !task.completed;
     })
     .sort((a, b) => {
       if (a.pinned && !b.pinned) return -1;
@@ -85,8 +84,12 @@ export default function DashboardScreen() {
 
       {filteredTasks.length === 0 ? (
         <View style={styles.empty}>
-          <Text style={styles.emptyText}>No assignments yet!</Text>
-          <Text style={styles.emptySubtext}>Tap + to add your first assignment</Text>
+          <Text style={styles.emptyText}>
+            {filter === 'Completed' ? 'No completed assignments!' : 'All caught up!'}
+          </Text>
+          <Text style={styles.emptySubtext}>
+            {filter === 'Completed' ? 'Complete an assignment to see it here' : 'Tap + to add a new assignment'}
+          </Text>
         </View>
       ) : (
         <FlatList
