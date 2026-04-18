@@ -121,10 +121,10 @@ export default function DashboardScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.navBtn}
-          onPress={() => router.push('/progress')}
+          onPress={() => router.push('/calendar')}
         >
-          <Text style={styles.navIcon}>📊</Text>
-          <Text style={styles.navLabel}>Progress</Text>
+          <Text style={styles.navIcon}>📅</Text>
+          <Text style={styles.navLabel}>Calendar</Text>
         </TouchableOpacity>
         <View style={styles.navSpacer} />
         <TouchableOpacity

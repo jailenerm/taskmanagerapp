@@ -56,6 +56,12 @@ export default function RootLayout() {
           headerBackTitle: 'Back',
         }}
       />
+      <Stack.Screen
+        name="calendar"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   );
 }
