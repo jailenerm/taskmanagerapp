@@ -1,23 +1,25 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
+  FlatList,
+  Modal,
   SafeAreaView, ScrollView,
   StyleSheet,
   Switch,
   Text, TextInput, TouchableOpacity,
   View
 } from 'react-native';
-import { COURSE_COLORS } from '../src/constants/courseColors';
 import { scheduleTaskNotification } from '../src/services/notificationService';
 import { loadTasks, saveTasks } from '../src/services/storageService';
 
 export default function AddTaskScreen() {
   const [title, setTitle] = useState('');
   const [course, setCourse] = useState('');
+  const [courseColor, setCourseColor] = useState('#FF6B6B');
   const [isTest, setIsTest] = useState(false);
-  const [selectedColor, setSelectedColor] = useState('#FF6B6B');
   const [priority, setPriority] = useState('Medium');
   const [dueDate, setDueDate] = useState(new Date());
   const [showDuePicker, setShowDuePicker] = useState(false);
@@ -28,7 +30,19 @@ export default function AddTaskScreen() {
     hour: false,
     morning: false,
   });
+  const [classes, setClasses] = useState([]);
+  const [showClassPicker, setShowClassPicker] = useState(false);
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const data = await AsyncStorage.getItem('classes');
+        setClasses(data ? JSON.parse(data) : []);
+      } catch { setClasses([]); }
+    };
+    fetchClasses();
+  }, []);
 
   const formatDate = (date) => {
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
@@ -36,7 +50,7 @@ export default function AddTaskScreen() {
 
   const handleSave = async () => {
     if (!title.trim()) { Alert.alert('Oops!', 'Please enter a title'); return; }
-    if (!course.trim()) { Alert.alert('Oops!', 'Please enter a course name'); return; }
+    if (!course.trim()) { Alert.alert('Oops!', 'Please select or enter a course'); return; }
 
     const newTask = {
       id: Date.now().toString(),
@@ -47,7 +61,7 @@ export default function AddTaskScreen() {
       reminderDate: reminderDate.toISOString(),
       reminders,
       priority,
-      color: selectedColor,
+      color: courseColor,
       pinned: isTest,
       completed: false,
       createdAt: new Date().toISOString(),
@@ -74,13 +88,38 @@ export default function AddTaskScreen() {
           onChangeText={setTitle}
         />
 
-        <Text style={styles.label}>Course Name</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="e.g. English"
-          value={course}
-          onChangeText={setCourse}
-        />
+        <Text style={styles.label}>Course</Text>
+        {classes.length > 0 ? (
+          <TouchableOpacity
+            style={styles.coursePickerBtn}
+            onPress={() => setShowClassPicker(true)}
+          >
+            {course ? (
+              <View style={styles.courseSelected}>
+                <View style={[styles.courseDot, { backgroundColor: courseColor }]} />
+                <Text style={styles.courseSelectedText}>{course}</Text>
+              </View>
+            ) : (
+              <Text style={styles.coursePlaceholder}>Select a class...</Text>
+            )}
+            <Text style={styles.courseArrow}>▾</Text>
+          </TouchableOpacity>
+        ) : (
+          <TextInput
+            style={styles.input}
+            placeholder="e.g. English (Add classes first!)"
+            value={course}
+            onChangeText={setCourse}
+          />
+        )}
+
+        {classes.length > 0 && (
+          <TouchableOpacity onPress={() => setShowClassPicker(true)}>
+            <Text style={styles.addManually}>
+              {course ? 'Change class' : 'Or type manually'}
+            </Text>
+          </TouchableOpacity>
+        )}
 
         <Text style={styles.label}>Due Date</Text>
         <TouchableOpacity
@@ -161,21 +200,6 @@ export default function AddTaskScreen() {
           ))}
         </View>
 
-        <Text style={styles.label}>Course Color</Text>
-        <View style={styles.colorRow}>
-          {Object.values(COURSE_COLORS).map(color => (
-            <TouchableOpacity
-              key={color}
-              style={[
-                styles.colorCircle,
-                { backgroundColor: color },
-                selectedColor === color && styles.colorSelected
-              ]}
-              onPress={() => setSelectedColor(color)}
-            />
-          ))}
-        </View>
-
         <View style={styles.switchRow}>
           <View>
             <Text style={styles.switchLabel}>Test/Exam</Text>
@@ -198,6 +222,52 @@ export default function AddTaskScreen() {
         </TouchableOpacity>
 
       </ScrollView>
+
+      <Modal
+        visible={showClassPicker}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowClassPicker(false)}
+      >
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Select Class</Text>
+            <TouchableOpacity onPress={() => setShowClassPicker(false)}>
+              <Text style={styles.modalClose}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+          <FlatList
+            data={classes}
+            keyExtractor={item => item.id}
+            contentContainerStyle={styles.classList}
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                style={[
+                  styles.classItem,
+                  course === item.name && styles.classItemActive
+                ]}
+                onPress={() => {
+                  setCourse(item.name);
+                  setCourseColor(item.color);
+                  setShowClassPicker(false);
+                }}
+              >
+                <View style={[styles.classItemDot, { backgroundColor: item.color }]} />
+                <View style={styles.classItemInfo}>
+                  <Text style={styles.classItemName}>{item.name}</Text>
+                  {item.professor ? (
+                    <Text style={styles.classItemDetail}>{'👤 ' + item.professor}</Text>
+                  ) : null}
+                </View>
+                {course === item.name && (
+                  <Text style={styles.classItemCheck}>✓</Text>
+                )}
+              </TouchableOpacity>
+            )}
+          />
+        </SafeAreaView>
+      </Modal>
+
     </SafeAreaView>
   );
 }
@@ -208,6 +278,13 @@ const styles = StyleSheet.create({
   label: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 6, marginTop: 16 },
   switchLabel: { fontSize: 14, fontWeight: '600', color: '#1E293B', marginBottom: 2 },
   input: { backgroundColor: '#fff', borderRadius: 10, padding: 14, fontSize: 15, borderWidth: 1, borderColor: '#E2E8F0' },
+  coursePickerBtn: { backgroundColor: '#fff', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E2E8F0', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  courseSelected: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  courseDot: { width: 12, height: 12, borderRadius: 6 },
+  courseSelectedText: { fontSize: 15, color: '#1E293B', fontWeight: '500' },
+  coursePlaceholder: { fontSize: 15, color: '#94A3B8' },
+  courseArrow: { fontSize: 16, color: '#94A3B8' },
+  addManually: { fontSize: 12, color: '#6C63FF', marginTop: 6, fontWeight: '500' },
   dateBtn: { backgroundColor: '#fff', borderRadius: 10, padding: 14, borderWidth: 1, borderColor: '#E2E8F0' },
   dateBtnText: { fontSize: 15, color: '#1E293B' },
   doneBtn: { backgroundColor: '#6C63FF', borderRadius: 8, padding: 10, alignItems: 'center', marginTop: 8 },
@@ -226,13 +303,22 @@ const styles = StyleSheet.create({
   priorityLow: { backgroundColor: '#DCFCE7', borderColor: '#4ADE80' },
   priorityText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
   priorityTextActive: { color: '#1E293B' },
-  colorRow: { flexDirection: 'row', gap: 12, marginTop: 8, flexWrap: 'wrap' },
-  colorCircle: { width: 36, height: 36, borderRadius: 18 },
-  colorSelected: { borderWidth: 3, borderColor: '#1E293B', transform: [{ scale: 1.2 }] },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', borderRadius: 10, padding: 14, marginTop: 16, borderWidth: 1, borderColor: '#E2E8F0' },
   switchSub: { fontSize: 12, color: '#94A3B8', marginTop: 2 },
   saveBtn: { backgroundColor: '#6C63FF', borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 32 },
   saveBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
   cancelBtn: { borderRadius: 12, padding: 16, alignItems: 'center', marginTop: 8 },
   cancelText: { color: '#94A3B8', fontSize: 15 },
+  modalContainer: { flex: 1, backgroundColor: '#F8FAFC' },
+  modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, borderBottomWidth: 1, borderBottomColor: '#E2E8F0', backgroundColor: '#fff' },
+  modalTitle: { fontSize: 18, fontWeight: '700', color: '#1E293B' },
+  modalClose: { fontSize: 16, color: '#6C63FF', fontWeight: '600' },
+  classList: { padding: 16 },
+  classItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0' },
+  classItemActive: { borderColor: '#6C63FF', backgroundColor: '#EEF2FF' },
+  classItemDot: { width: 14, height: 14, borderRadius: 7, marginRight: 12 },
+  classItemInfo: { flex: 1 },
+  classItemName: { fontSize: 16, fontWeight: '600', color: '#1E293B' },
+  classItemDetail: { fontSize: 13, color: '#64748B', marginTop: 2 },
+  classItemCheck: { fontSize: 18, color: '#6C63FF', fontWeight: '700' },
 });
