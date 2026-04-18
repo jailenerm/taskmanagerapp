@@ -83,7 +83,20 @@ export default function CalendarScreen() {
     return getTasksForDay(day).length > 0 || getClassesForDay(day).length > 0;
   };
 
-  const selectedDateClasses = getClassesForDay(selectedDate.getDate());
+  const selectedDateClasses = getClassesForDay(selectedDate.getDate()).sort((a, b) => {
+    const toMinutes = (time) => {
+      if (!time) return 0;
+      const match = time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if (!match) return 0;
+      let hours = parseInt(match[1]);
+      const minutes = parseInt(match[2]);
+      const ampm = match[3].toUpperCase();
+      if (ampm === 'PM' && hours !== 12) hours += 12;
+      if (ampm === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    };
+    return toMinutes(a.startTime) - toMinutes(b.startTime);
+  });
   const selectedDateTasks = getTasksForDay(selectedDate.getDate());
 
   const cells = [];
