@@ -59,7 +59,11 @@ export default function RootLayout() {
       <Stack.Screen
         name="calendar"
         options={{
-          headerShown: false,
+          title: 'Calendar',
+          headerStyle: { backgroundColor: '#6C63FF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
         }}
       />
     </Stack>
