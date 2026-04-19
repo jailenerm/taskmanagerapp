@@ -137,6 +137,13 @@ export default function DashboardScreen() {
         <View style={styles.navSpacer} />
         <TouchableOpacity
           style={styles.navBtn}
+          onPress={() => router.push('/notes')}
+        >
+          <Text style={styles.navIcon}>📝</Text>
+          <Text style={styles.navLabel}>Notes</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navBtn}
           onPress={() => router.push('/study-timer')}
         >
           <Text style={styles.navIcon}>⏱</Text>

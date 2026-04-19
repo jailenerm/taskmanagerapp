@@ -66,6 +66,17 @@ export default function RootLayout() {
           headerBackTitle: 'Back',
         }}
       />
+       <Stack.Screen
+        name="notes"
+        options={{
+          title: 'My Notes',
+          headerStyle: { backgroundColor: '#6C63FF' },
+          headerTintColor: '#fff',
+          headerTitleStyle: { fontWeight: 'bold' },
+          headerBackTitle: 'Back',
+
+        }}
+      />
     </Stack>
   );
 }
