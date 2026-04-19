@@ -35,24 +35,7 @@ I made an app that helps me keep track of my assignment. You can add your classe
 4. Run `npx expo start`
 5. Press `i` to open the iOS Simulator
 
-## Project Structure
 
-TaskManagerApp/
-├── app/
-│   ├── index.js          — main dashboard screen
-│   ├── add-task.js       — add and edit assignments
-│   ├── classes.js        — manage semester classes
-│   ├── calendar.js       — calendar view
-│   ├── study-timer.js    — study timer
-│   └── _layout.js        — navigation setup
-├── src/
-│   ├── components/
-│   │   └── TaskCard.js   — assignment card component
-│   ├── services/
-│   │   ├── storageService.js      — save and load data
-│   │   └── notificationService.js — handle notifications
-│   └── constants/
-│       └── courseColors.js        — color options
 
 ## Built by
 
