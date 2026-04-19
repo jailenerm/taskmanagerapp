@@ -4,7 +4,7 @@ A mobile app I built for my Intro to Software Engineering class. It helps colleg
 
 ## Why I built this
 
-I kept forgetting assignments and missing due dates so I decided to build an app that does all of that for me. I wanted something that actually fits how a college student thinks — organized by class, with reminders, and easy to use on your phone.
+I decided to build an app that helps students stay on track with assignments. I wanted something that actually fits how a college student thinks — organized by class, with reminders, and easy to use on your phone.
 
 ## Features
 
