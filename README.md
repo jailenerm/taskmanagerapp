@@ -1,42 +1,76 @@
 # 📚 Assignment Task Manager App
 
-A mobile app I built for my Intro to Software Engineering class. It helps college students keep track of their assignments, classes, and study sessions all in one place.
+A mobile app I built for my Intro to Software Engineering class. It helps college students stay organized by keeping track of assignments, classes, notes, and study sessions all in one place.
 
-## What the app does
+## Why I built this
 
-I made an app that helps me keep track of my assignment. You can add your classes for the semester, add assignments with due dates, set reminders, and track everything from your phone.
+I kept forgetting assignments and missing due dates so I decided to build an app that does all of that for me. I wanted something that actually fits how a college student thinks — organized by class, with reminders, and easy to use on your phone.
 
 ## Features
 
-- **My Assignments** — see all your pending and completed assignments in one place
-- **Add Assignments** — add a title, pick your class, set a due date with a calendar, choose priority level and set reminders
-- **Pin Assignments** — pin important assignments to the top so you never miss them. Test and exam assignments get auto pinned
-- **Priority Levels** — mark assignments as High, Medium or Low priority so you know what to work on first
-- **My Classes** — add all your classes for the semester with professor name, room, meeting days and times
-- **Calendar View** — see your class schedule and assignment due dates on a calendar
-- **Study Timer** — pomodoro style timer with custom study and break times to help you stay focused
-- **Reminders** — set notifications for 1 week before, 1 day before, 1 hour before or the morning of the due date
-- **Color Coded** — each class gets its own color so you can tell assignments apart at a glance
+### 📝 Assignments
+- Add assignments with a title, course, due date and priority level
+- Color coded by class so you can tell them apart at a glance
+- Pin important assignments to the top so you never miss them
+- Test and exam assignments get automatically pinned
+- Mark assignments as done and they move to completed
+- Edit or delete any assignment
+- Set reminders for 1 week before, 1 day before, 1 hour before or morning of
+
+### 📚 Classes
+- Add all your classes for the semester
+- Include professor name, room, meeting days and times
+- Classes are sorted by time automatically
+- Edit or delete classes anytime
+- Color code each class
+
+### 📅 Calendar
+- See your full class schedule on a calendar
+- See assignment due dates on the same calendar
+- Tap any day to see what classes and assignments are scheduled
+- Classes show in order by time
+
+### 📝 Notes
+- Add notes organized by class
+- Set the lecture date for each note
+- Upload photos from your gallery or take a photo with your camera
+- Record voice notes during class
+- Play back voice recordings anytime
+- Filter notes by class
+
+### ⏱ Study Timer
+- Pomodoro style timer with Study and Break modes
+- Customize how long each session is
+- Track how many sessions you completed today
+- Clean minimal design
+
+### 🔔 Reminders
+- Push notifications for assignment due dates
+- Multiple reminder options per assignment
+- Special reminders for tests and exams
 
 ## Tech Stack
 
-- **React Native** — for building the mobile app with JavaScript
-- **Expo** — to run and test the app on iOS
-- **Expo Router** — for navigation between screens
-- **AsyncStorage** — to save data locally on the device
-- **Expo Notifications** — for push notification reminders
-- **DateTimePicker** — for the calendar and time picker
+- **React Native** — mobile app framework
+- **JavaScript** — programming language
+- **Expo** — development platform and tools
+- **Expo Router** — navigation between screens
+- **AsyncStorage** — local device storage for all data
+- **Expo Notifications** — push notification reminders
+- **Expo Image Picker** — camera and photo library access
+- **Expo AV** — voice recording and playback
+- **DateTimePicker** — calendar and time picker UI
 
 ## How to run it
 
 1. Make sure you have Node.js installed
-2. Clone this repo
-3. Run `npm install`
-4. Run `npx expo start`
+2. Clone this repo:
+3. Install dependencies:
+npm install
+4. Start the app:
+npx expo start
 5. Press `i` to open the iOS Simulator
 
+# Built by
 
-
-## Built by
-
-Jailene 
+Jailene —
