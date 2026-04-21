@@ -71,6 +71,3 @@ npm install
 npx expo start
 5. Press `i` to open the iOS Simulator
 
-# Built by
-
-Jailene —
