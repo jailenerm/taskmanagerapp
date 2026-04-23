@@ -1,4 +1,4 @@
-# 📚 Assignment Task Manager App
+# Assignment Task Manager App
 
 A mobile app I built for my Intro to Software Engineering class. It helps college students stay organized by keeping track of assignments, classes, notes, and study sessions all in one place.
 
@@ -8,7 +8,7 @@ I decided to build an app that helps students stay on track with assignments. I 
 
 ## Features
 
-### 📝 Assignments
+### Assignments
 - Add assignments with a title, course, due date and priority level
 - Color coded by class so you can tell them apart at a glance
 - Pin important assignments to the top so you never miss them
@@ -17,14 +17,14 @@ I decided to build an app that helps students stay on track with assignments. I 
 - Edit or delete any assignment
 - Set reminders for 1 week before, 1 day before, 1 hour before or morning of
 
-### 📚 Classes
+### Classes
 - Add all your classes for the semester
 - Include professor name, room, meeting days and times
 - Classes are sorted by time automatically
 - Edit or delete classes anytime
 - Color code each class
 
-### 📅 Calendar
+### Calendar
 - See your full class schedule on a calendar
 - See assignment due dates on the same calendar
 - Tap any day to see what classes and assignments are scheduled
@@ -38,13 +38,13 @@ I decided to build an app that helps students stay on track with assignments. I 
 - Play back voice recordings anytime
 - Filter notes by class
 
-### ⏱ Study Timer
+### Study Timer
 - Pomodoro style timer with Study and Break modes
 - Customize how long each session is
 - Track how many sessions you completed today
 - Clean minimal design
 
-### 🔔 Reminders
+### Reminders
 - Push notifications for assignment due dates
 - Multiple reminder options per assignment
 - Special reminders for tests and exams
