@@ -30,7 +30,7 @@ I decided to build an app that helps students stay on track with assignments. I 
 - Tap any day to see what classes and assignments are scheduled
 - Classes show in order by time
 
-### 📝 Notes
+### Notes
 - Add notes organized by class
 - Set the lecture date for each note
 - Upload photos from your gallery or take a photo with your camera
