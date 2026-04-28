@@ -1,10 +1,10 @@
 # Assignment Task Manager App
 
-A mobile app I built for my Intro to Software Engineering class. It helps college students stay organized by keeping track of assignments, classes, notes, and study sessions all in one place.
+A mobile app built to It helps college students stay organized by keeping track of assignments, classes, notes, and study sessions all in one place.
 
 ## Why I built this
 
-I decided to build an app that helps students stay on track with assignments. I wanted something that actually fits how a college student thinks — organized by class, with reminders, and easy to use on your phone.
+I decided to build an app that helps students stay on track with assignments. I wanted something that actually fits how a college student thinks, something easy to use on your phone.
 
 ## Features
 
@@ -71,3 +71,26 @@ npm install
 npx expo start
 5. Press `i` to open the iOS Simulator
 
+## Project Structure
+
+TaskManagerApp/
+├── app/
+│   ├── index.js           — main assignments dashboard
+│   ├── add-task.js        — add and edit assignments
+│   ├── classes.js         — manage semester classes
+│   ├── calendar.js        — calendar view
+│   ├── notes.js           — class notes
+│   ├── study-timer.js     — study timer
+│   └── _layout.js         — navigation setup
+├── src/
+│   ├── components/
+│   │   └── TaskCard.js    — assignment card component
+│   ├── services/
+│   │   ├── storageService.js       — save and load data
+│   │   └── notificationService.js  — handle notifications
+│   └── constants/
+│       └── courseColors.js         — color options
+├── assets/
+│   └── images/
+│       └── icon.png       — app icon
+└── README.md
